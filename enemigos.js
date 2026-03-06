@@ -9,7 +9,7 @@ export default class Enemigos {
     height = null;
     x = 0;
     y = 0;
-    lives = 1;
+    lives = 2;
 
     speedWith = 3;
     speedHeight = 20;

@@ -5,7 +5,7 @@ import Jugador from "./jugador.js";
 import Disparo from "./disparo.js";
 import Enemigos from "./enemigos.js";
 import hitBoxing from "./hitBoxing.js";
-import UI from "./ui.js";
+import UI from "./UI.js";
 async function main() {
     const loadAudio = await cargarAudio("./sonidos/My Hello Kitty Cafe Soundtrack -  Town.mp3");
     loadAudio.volume = 0.8;
