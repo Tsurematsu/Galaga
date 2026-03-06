@@ -1,10 +1,17 @@
 import cargarRecursos from "./cargarRecurso.js";
+import cargarAudio from "./cargarAudio.js";
 import Game from "./game.js";
 import Jugador from "./jugador.js";
 import Disparo from "./disparo.js";
 import Enemigos from "./enemigos.js";
+import hitBoxing from "./hitBoxing.js";
 async function main() {
-    /** @type {HTMLCanvasElement} */ 
+    const loadAudio = await cargarAudio("./sonidos/My Hello Kitty Cafe Soundtrack -  Town.mp3");
+    loadAudio.volume = 0.8;
+    loadAudio.loop = true;
+    loadAudio.play();
+    
+    /** @type {HTMLCanvasElement} */
     const canvas = document.querySelector('canvas#planoDibujo');
     const context = canvas.getContext('2d');
 
@@ -24,22 +31,26 @@ async function main() {
 
     // Escalar contexto
     context.scale(dpr, dpr);
-    const game = new Game(canvas, context);
-    const disparo = new Disparo();
+    const game = new Game(
+        canvas, 
+        context
+    );
 
-    const jugador = new Jugador( 
-        await cargarRecursos("./imagenes/jugador1.png"), 
+    const disparo = new Disparo({
+        nodoAudio: await cargarAudio("./sonidos/7.mpeg")
+    });
+
+    const jugador = new Jugador(
+        await cargarRecursos("./imagenes/jugador1.png"),
         await cargarRecursos("./imagenes/enemigoMuerto.jpeg"),
         0.06
     );
-
     jugador.x = canvas.width / 2 - jugador.width / 2
     jugador.y = canvas.height - jugador.height - 70
 
-
     const enemigos = new Enemigos(
         await cargarRecursos("./imagenes/enemigo1.png"),
-        await cargarRecursos("./imagenes/enemigoMuerto.jpeg"),
+        await cargarAudio("./sonidos/3.mpeg"),
         0.19,
         20,
         canvas.width - 100,
@@ -47,46 +58,30 @@ async function main() {
         canvas
     )
 
-    let tempBala = null
-    disparo.onEventMove((bala, removeBala)=>{
-        tempBala = bala;
-
-        if (bala.y < 300) {
-            removeBala()
-        }
-    })
-
-    enemigos.onMove((enemigo, index, removeEnemigo)=>{
-        
-        // if (
-        //     bala.x > enemigo.x &&
-        //     bala.x < enemigo.x + enemigo.width &&
-        //     bala.y > enemigo.y &&
-        //     bala.y < enemigo.y + enemigo.height
-        // ) {
-        //     console.log("eventp");
-            
-        //     // removeEnemigo();
-        //     // removeBala();
-        // }
-    })
-
-    
-
-    
     jugador.onShoot((pos) => {
         disparo.nuevaBala(pos.x + jugador.width / 2, pos.y);
     })
 
-    jugador.onDestroyed(() => {
+    game.loop(() => {
+        const ColicionEnemigoBala = hitBoxing(disparo.list, enemigos.list, 0, 0)
+        disparo.removeBala(ColicionEnemigoBala.A);
+        enemigos.removeEnemigo(ColicionEnemigoBala.B);
+        const ColicionEnemigoJugador = hitBoxing([jugador], enemigos.list, 0,5)
+        if (ColicionEnemigoJugador.A.length > 0) {
+            console.log("Perdiste");
+            game.stop();
+            context.clearRect(0, 0, canvas.width, canvas.height);
+        }
+    })
 
-    });
-
-    game.start((ctx, canvas, gameProperties) => {
+    game.render((ctx, canvas, gameProperties) => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
         enemigos.render(ctx)
-        jugador.draw(ctx);
-        disparo.render(ctx, canvas);
+        jugador.render(ctx);
+        disparo.render(ctx);
     });
+
+    game.start();
 }
 main()
 

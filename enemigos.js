@@ -1,7 +1,7 @@
 export default class Enemigos {
 
     image = null;
-    imageDestroy = null;
+    nodoAudio = null;
     escalado = null;
 
     width = null;
@@ -17,16 +17,15 @@ export default class Enemigos {
 
     separacion = null;
 
-    enemigos = []
+    list = []
 
     canvasMain = null;
     _cacheTemplate = []
-    _eventMove = ()=>{}
 
-    constructor(imagePlayer, imageDestroy, escalado, separacion, areaWidth, areaHeight, canvasMain) {
+    constructor(imagePlayer, nodoAudio, escalado, separacion, areaWidth, areaHeight, canvasMain) {
         this.canvasMain = canvasMain;
         this.image = imagePlayer;
-        this.imageDestroy = imageDestroy;
+        this.nodoAudio = nodoAudio;
         this.escalado = escalado;
         this.separacion = separacion;
 
@@ -45,24 +44,23 @@ export default class Enemigos {
             for (let col = 0; col < numFilas; col++) {
                 const x = col * (this.width + this.separacion);
                 const y = fila * (this.height + this.separacion);
-                this.enemigos.push({ x, y })
+                this.list.push({
+                    x,
+                    y,
+                    width: this.width,
+                    height: this.height
+                })
             }
 
         }
-        this._cacheTemplate = JSON.parse(JSON.stringify(this.enemigos))
+        this._cacheTemplate = JSON.parse(JSON.stringify(this.list))
         this.prerender()
     }
 
     _reverseMode = true;
 
-    prerender(){
-        this.preRenderCtx.clearRect(
-            0,
-            0,
-            this.preRenderPlano.width,
-            this.preRenderPlano.height
-        );
-        for (const element of this.enemigos) {
+    prerender() {
+        for (const element of this.list) {
             this.preRenderCtx.drawImage(
                 this.image,
                 element.x,
@@ -74,25 +72,23 @@ export default class Enemigos {
 
     }
 
-
-    render(ctx){
-        for (let index = 0; index < this.enemigos.length; index++) {
-            const enemigo = this.enemigos[index];
-            const enemigo_tm = this._cacheTemplate[index];
-            enemigo.x = enemigo_tm.x + this.x
-            enemigo.y = enemigo_tm.y + this.y
-            const removeEnemigo = ()=>{
-                this.enemigos.splice(index, 1);
-                this._cacheTemplate.splice(index, 1)
-                this.prerender()
+    removeEnemigo(iArray) {
+        this.list = this.list.filter((_, i) => {
+            if (iArray.includes(i)) {
+                const clonNodo = this.nodoAudio.cloneNode();
+                clonNodo.volume = 0.5;
+                clonNodo.play();
+                
+                const enemigo_tm = this._cacheTemplate[i];
+                this.preRenderCtx.clearRect(enemigo_tm.x - 2, enemigo_tm.y - 2, this.width + 4, this.height + 4);
+                return false; // elimina
             }
-            this._eventMove(enemigo, index, removeEnemigo)
-            // if (index == 0) {
-            //     console.clear()
-            //     console.log(enemigo);
-            //     console.log(enemigo_tm);
-            // }
-        }
+            return true; // mantiene
+        });
+        this._cacheTemplate = this._cacheTemplate.filter((_, i) => !iArray.includes(i));
+    }
+
+    render(ctx) {
 
         ctx.clearRect(
             this.x,
@@ -105,20 +101,26 @@ export default class Enemigos {
         if (this.x + this.preRenderPlano.width - this.separacion < this.canvasMain.width && this._reverseMode) {
             this.x += this.speedWith;
         }
-  
+
         if (this.x > 0 && !this._reverseMode) {
             this.x -= this.speedWith;
         }
 
-        if(this.x + this.preRenderPlano.width - this.separacion == this.canvasMain.width) {
+        if (this.x + this.preRenderPlano.width - this.separacion == this.canvasMain.width) {
             this._reverseMode = false
-            if(this.y < this.canvasMain.height) this.y += this.speedHeight;
+            if (this.y < this.canvasMain.height) this.y += this.speedHeight;
         };
-        if(this.x == 0) {
+        if (this.x == 0) {
             this._reverseMode = true
-            if(this.y < this.canvasMain.height) this.y += this.speedHeight;
+            if (this.y < this.canvasMain.height) this.y += this.speedHeight;
         };
 
+        for (let index = 0; index < this.list.length; index++) {
+            const enemigo = this.list[index];
+            const enemigo_tm = this._cacheTemplate[index];
+            enemigo.x = enemigo_tm.x + this.x
+            enemigo.y = enemigo_tm.y + this.y
+        }
 
         ctx.drawImage(
             this.preRenderPlano,
@@ -126,10 +128,6 @@ export default class Enemigos {
             this.y
         );
 
-    }
-
-    onMove(callback){
-        this._eventMove = callback
     }
 
 }

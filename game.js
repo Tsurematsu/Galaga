@@ -1,4 +1,5 @@
 export default class Game {
+    _eventLoop = ()=>{};
     gameProperties = {
         playerSpeed: 5,
         status : "playing"
@@ -9,8 +10,11 @@ export default class Game {
         this.lastTime = 0;
     }
 
-    gameLoop(timestamp) {
+    gameLoop(timestamp ) {
         if (timestamp - this.lastTime > 1000 / 60) { // 60 FPS
+            if (this.gameProperties.status === "playing") this._eventLoop(this.context, this.canvas, this.gameProperties);
+            if (this.gameProperties.status === "stopped") return;
+            
             this.loopCallback(this.context, this.canvas, this.gameProperties);
             this.lastTime = timestamp;
         }
@@ -19,10 +23,22 @@ export default class Game {
         }
     }
 
-    start(loopCallback) {
+    render(loopCallback) {
         this.loopCallback = loopCallback;
+        loopCallback(this.context, this.canvas, this.gameProperties);
+    }
+
+    start() {
         this.gameProperties.status = "playing";
         requestAnimationFrame(this.gameLoop.bind(this));
+    }
+
+    stop() {
+        this.gameProperties.status = "stopped";
+    }
+
+    loop(callbackLoop){
+        this._eventLoop = callbackLoop;
     }
 
 }

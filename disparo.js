@@ -1,31 +1,38 @@
 export default class Disparo{
-    balas = [];
-
-    _evenMove = ()=>{}
+    list = [];
+    volumen = 0.2;
+    nodoAudio = null
+    constructor({nodoAudio}) {
+        this.nodoAudio = nodoAudio;
+    }
 
     nuevaBala(x, y){
-        this.balas.push({
+        const clonNodo = this.nodoAudio.cloneNode();
+        clonNodo.volume = this.volumen;
+        clonNodo.play();
+        this.list.push({
             x: x,
             y: y,
-            velocidad: 5
+            width: 5,
+            height: 10,
+            velocidad: 5,
         });
     } 
+
+      removeBala(indices) {
+        this.list = this.list.filter((_, i) => !indices.includes(i));
+    }
+
     render(ctx) {
-        this.balas.forEach((bala, index) => {
-            const removeBala = ()=>{
-                ctx.clearRect(bala.x - 1, bala.y - 1, 7, 12);
-                this.balas.splice(index, 1)
-            }
-            this._evenMove(bala, removeBala)
+        this.list.forEach((bala, index) => {
             ctx.fillStyle = "pink";
-            ctx.clearRect(bala.x - 1, bala.y - 1, 7, 12);
             bala.y -= bala.velocidad;
-            ctx.fillRect(bala.x, bala.y, 5, 10);
-            if (bala.y < -10) this.balas.splice(index, 1)
+            ctx.fillRect(bala.x, bala.y, bala.width, bala.height);
+            if (bala.y < -10) {
+                this.list.splice(index, 1)
+            }
         });
     }
 
-    onEventMove(callback){
-        this._evenMove = callback
-    }
+    
 }

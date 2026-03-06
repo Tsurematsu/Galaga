@@ -82,12 +82,9 @@ export default class Jugador{
         callback();
     }
 
-    draw(ctx, canvas) {
-        if (this._generalPressed) {
-            ctx.clearRect(this.x - 2, this.y - 2, this.width + 4, this.height + 4);
-            this._LogicaMovimiento();
-            ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
-        }
+    render(ctx) {
+        this._LogicaMovimiento();
+        ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
     }
 
     onDestroyed(callback) {
