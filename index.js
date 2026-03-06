@@ -5,6 +5,7 @@ import Jugador from "./jugador.js";
 import Disparo from "./disparo.js";
 import Enemigos from "./enemigos.js";
 import hitBoxing from "./hitBoxing.js";
+import UI from "./ui.js";
 async function main() {
     const loadAudio = await cargarAudio("./sonidos/My Hello Kitty Cafe Soundtrack -  Town.mp3");
     loadAudio.volume = 0.8;
@@ -36,6 +37,8 @@ async function main() {
         context
     );
 
+    const ui = new UI();
+
     const disparo = new Disparo({
         nodoAudio: await cargarAudio("./sonidos/7.mpeg")
     });
@@ -45,8 +48,7 @@ async function main() {
         await cargarRecursos("./imagenes/enemigoMuerto.jpeg"),
         0.06
     );
-    jugador.x = canvas.width / 2 - jugador.width / 2
-    jugador.y = canvas.height - jugador.height - 70
+    
 
     const enemigos = new Enemigos(
         await cargarRecursos("./imagenes/enemigo1.png"),
@@ -66,11 +68,12 @@ async function main() {
         const ColicionEnemigoBala = hitBoxing(disparo.list, enemigos.list, 0, 0)
         disparo.removeBala(ColicionEnemigoBala.A);
         enemigos.removeEnemigo(ColicionEnemigoBala.B);
-        const ColicionEnemigoJugador = hitBoxing([jugador], enemigos.list, 0,5)
+        const ColicionEnemigoJugador = hitBoxing([jugador], enemigos.list, 0, 10)
+        ui.score += 10 * ColicionEnemigoBala.B.length;
+        
         if (ColicionEnemigoJugador.A.length > 0) {
-            console.log("Perdiste");
             game.stop();
-            context.clearRect(0, 0, canvas.width, canvas.height);
+            ui.setGameOver();
         }
     })
 
@@ -79,9 +82,18 @@ async function main() {
         enemigos.render(ctx)
         jugador.render(ctx);
         disparo.render(ctx);
+        ui.render(ctx);
     });
 
-    game.start();
+    ui.onPlay(() => {
+        jugador.x = canvas.width / 2 - jugador.width / 2
+        jugador.y = canvas.height - jugador.height - 70
+        enemigos.reset();
+        disparo.reset();
+        game.start();
+    });
+
+    // game.start();
 }
 main()
 

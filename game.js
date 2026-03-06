@@ -13,8 +13,6 @@ export default class Game {
     gameLoop(timestamp ) {
         if (timestamp - this.lastTime > 1000 / 60) { // 60 FPS
             if (this.gameProperties.status === "playing") this._eventLoop(this.context, this.canvas, this.gameProperties);
-            if (this.gameProperties.status === "stopped") return;
-            
             this.loopCallback(this.context, this.canvas, this.gameProperties);
             this.lastTime = timestamp;
         }

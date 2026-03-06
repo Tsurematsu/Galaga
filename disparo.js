@@ -34,5 +34,9 @@ export default class Disparo{
         });
     }
 
+    reset() {
+        this.list = [];
+    }
+
     
 }

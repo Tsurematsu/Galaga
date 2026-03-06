@@ -9,7 +9,7 @@ export default class Enemigos {
     x = 0;
     y = 0;
 
-    speedWith = 2;
+    speedWith = 3;
     speedHeight = 20;
 
     preRenderPlano = null;
@@ -38,6 +38,10 @@ export default class Enemigos {
 
         this.preRenderCtx = this.preRenderPlano.getContext("2d");
 
+        this.makeTemplate();
+    }
+
+    makeTemplate() { 
         const numFilas = Math.floor(this.preRenderPlano.width / (this.width + this.separacion));
         const numColumnas = Math.floor(this.preRenderPlano.height / (this.height + this.separacion));
         for (let fila = 0; fila < numColumnas; fila++) {
@@ -60,6 +64,7 @@ export default class Enemigos {
     _reverseMode = true;
 
     prerender() {
+        this.preRenderCtx.clearRect(0, 0, this.preRenderPlano.width, this.preRenderPlano.height);
         for (const element of this.list) {
             this.preRenderCtx.drawImage(
                 this.image,
@@ -86,6 +91,16 @@ export default class Enemigos {
             return true; // mantiene
         });
         this._cacheTemplate = this._cacheTemplate.filter((_, i) => !iArray.includes(i));
+    }
+
+    reset() {
+        this.x = 0;
+        this.y = 0;
+        this.list = [];
+        this._cacheTemplate = [];
+        this.makeTemplate();
+        this.list = JSON.parse(JSON.stringify(this._cacheTemplate));
+        this.prerender();
     }
 
     render(ctx) {
