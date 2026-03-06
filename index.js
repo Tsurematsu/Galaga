@@ -93,6 +93,8 @@ async function main() {
         enemigos.reset();
         disparo.reset();
         game.start();
+
+        loadAudio.play();
     });
 
     // game.start();
