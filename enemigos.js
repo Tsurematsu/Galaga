@@ -2,12 +2,14 @@ export default class Enemigos {
 
     image = null;
     nodoAudio = null;
+    nodoAudioDestroy = null;
     escalado = null;
 
     width = null;
     height = null;
     x = 0;
     y = 0;
+    lives = 1;
 
     speedWith = 3;
     speedHeight = 20;
@@ -22,10 +24,11 @@ export default class Enemigos {
     canvasMain = null;
     _cacheTemplate = []
 
-    constructor(imagePlayer, nodoAudio, escalado, separacion, areaWidth, areaHeight, canvasMain) {
+    constructor(imagePlayer, nodoAudio, nodoAudioDestroy, escalado, separacion, areaWidth, areaHeight, canvasMain) {
         this.canvasMain = canvasMain;
         this.image = imagePlayer;
         this.nodoAudio = nodoAudio;
+        this.nodoAudioDestroy = nodoAudioDestroy;
         this.escalado = escalado;
         this.separacion = separacion;
 
@@ -52,7 +55,8 @@ export default class Enemigos {
                     x,
                     y,
                     width: this.width,
-                    height: this.height
+                    height: this.height,
+                    lives: this.lives
                 })
             }
 
@@ -78,19 +82,43 @@ export default class Enemigos {
     }
 
     removeEnemigo(iArray) {
+
+
         this.list = this.list.filter((_, i) => {
             if (iArray.includes(i)) {
-                const clonNodo = this.nodoAudio.cloneNode();
-                clonNodo.volume = 0.5;
-                clonNodo.play();
+                if(this.list[i].lives > 1){
+                    const clonNodo = this.nodoAudio.cloneNode();
+                    clonNodo.volume = 0.5;
+                    clonNodo.play();
+                    this.list[i].lives -= 1;
+                    return true; // mantiene
+                }
                 
+                const clonNodo = this.nodoAudioDestroy.cloneNode();
+                clonNodo.volume = 0.3;
+                clonNodo.play();
+
                 const enemigo_tm = this._cacheTemplate[i];
                 this.preRenderCtx.clearRect(enemigo_tm.x - 2, enemigo_tm.y - 2, this.width + 4, this.height + 4);
                 return false; // elimina
             }
             return true; // mantiene
         });
-        this._cacheTemplate = this._cacheTemplate.filter((_, i) => !iArray.includes(i));
+        
+        this._cacheTemplate = this._cacheTemplate.filter((_, i) => {
+            if (iArray.includes(i)){
+                if(this._cacheTemplate[i].lives > 1){
+                    this._cacheTemplate[i].lives -= 1;
+                    return true; // mantiene
+                }else if(this._cacheTemplate[i].lives < 0){
+                    return false; // elimina
+                }
+            }else{
+                return true; // mantiene
+            }
+        });
+
+        
     }
 
     reset() {

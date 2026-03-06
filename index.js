@@ -40,7 +40,8 @@ async function main() {
     const ui = new UI();
 
     const disparo = new Disparo({
-        nodoAudio: await cargarAudio("./sonidos/7.mpeg")
+        // nodoAudio: await cargarAudio("./sonidos/7.mpeg")
+        nodoAudio: await cargarAudio("./sonidos/yomecerlm3-meow-460686.mp3")
     });
 
     const jugador = new Jugador(
@@ -52,7 +53,8 @@ async function main() {
 
     const enemigos = new Enemigos(
         await cargarRecursos("./imagenes/enemigo1.png"),
-        await cargarAudio("./sonidos/3.mpeg"),
+        await cargarAudio("./sonidos/liecio-collect-points-190037.mp3"),
+        await cargarAudio("./sonidos/freesound_community-catmeow1-89814.mp3"),
         0.19,
         20,
         canvas.width - 100,
