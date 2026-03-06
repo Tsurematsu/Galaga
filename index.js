@@ -44,23 +44,23 @@ async function main() {
         nodoAudio: await cargarAudio("./sonidos/yomecerlm3-meow-460686.mp3")
     });
 
-    const jugador = new Jugador(
-        await cargarRecursos("./imagenes/jugador1.png"),
-        await cargarRecursos("./imagenes/enemigoMuerto.jpeg"),
-        0.06
-    );
+    const jugador = new Jugador({
+        imagePlayer: await cargarRecursos("./imagenes/jugador1.png"),
+        imageDestroy: await cargarRecursos("./imagenes/enemigoMuerto.jpeg"),
+        escalado: 0.06
+    });
     
 
-    const enemigos = new Enemigos(
-        await cargarRecursos("./imagenes/enemigo1.png"),
-        await cargarAudio("./sonidos/liecio-collect-points-190037.mp3"),
-        await cargarAudio("./sonidos/freesound_community-catmeow1-89814.mp3"),
-        0.19,
-        20,
-        canvas.width - 100,
-        canvas.height - 300,
-        canvas
-    )
+    const enemigos = new Enemigos({
+        imagePlayer: await cargarRecursos("./imagenes/enemigo1.png"),
+        nodoAudio: await cargarAudio("./sonidos/liecio-collect-points-190037.mp3"),
+        nodoAudioDestroy: await cargarAudio("./sonidos/freesound_community-catmeow1-89814.mp3"),
+        escalado: 0.19,
+        separacion: 20,
+        areaWidth: canvas.width - 100,
+        areaHeight: canvas.height - 300,
+        canvasMain: canvas
+    })
 
     jugador.onShoot((pos) => {
         disparo.nuevaBala(pos.x + jugador.width / 2, pos.y);

@@ -24,7 +24,16 @@ export default class Enemigos {
     canvasMain = null;
     _cacheTemplate = []
 
-    constructor(imagePlayer, nodoAudio, nodoAudioDestroy, escalado, separacion, areaWidth, areaHeight, canvasMain) {
+    constructor({
+            imagePlayer, 
+            nodoAudio, 
+            nodoAudioDestroy, 
+            escalado, 
+            separacion, 
+            areaWidth, 
+            areaHeight, 
+            canvasMain
+        }) {
         this.canvasMain = canvasMain;
         this.image = imagePlayer;
         this.nodoAudio = nodoAudio;

@@ -2,6 +2,9 @@ export default class Disparo{
     list = [];
     volumen = 0.2;
     nodoAudio = null
+    width = 5;
+    height = 10;
+    velocidad = 5;
     constructor({nodoAudio}) {
         this.nodoAudio = nodoAudio;
     }
@@ -13,9 +16,9 @@ export default class Disparo{
         this.list.push({
             x: x,
             y: y,
-            width: 5,
-            height: 10,
-            velocidad: 5,
+            width: this.width,
+            height: this.height,
+            velocidad: this.velocidad,
         });
     } 
 

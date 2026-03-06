@@ -7,7 +7,7 @@ export default class Jugador{
     velocidadBase = 5;
 
     
-    constructor(imagePlayer, imageDestroy, escalado){
+    constructor({imagePlayer, imageDestroy, escalado}){
         this.image = imagePlayer;
         this.imageDestroy = imageDestroy;
         this.escalado = escalado;
