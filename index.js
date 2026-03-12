@@ -6,6 +6,8 @@ import Disparo from "./disparo.js";
 import Enemigos from "./enemigos.js";
 import hitBoxing from "./hitBoxing.js";
 import UI from "./UI.js";
+import Powers from "./powers.js";
+import cargarRecursoSheet from "./cargarRecursoSheet.js";
 async function main() {
     const loadAudio = await cargarAudio("./sonidos/My Hello Kitty Cafe Soundtrack -  Town.mp3");
     loadAudio.volume = 0.8;
@@ -50,6 +52,14 @@ async function main() {
         escalado: 0.06
     });
     
+    const powerUps = new Powers({
+        nodoAudio: await cargarAudio("./sonidos/yey.mp3"),
+        imagenPowerUp: (await cargarRecursoSheet({
+            url: "./imagenes/powerUps.png",
+            columnas: 6,
+            filas: 6
+        }))
+    })
 
     const enemigos = new Enemigos({
         imagePlayer: await cargarRecursos("./imagenes/enemigo1.png"),
@@ -72,11 +82,16 @@ async function main() {
         enemigos.removeEnemigo(ColicionEnemigoBala.B);
         const ColicionEnemigoJugador = hitBoxing([jugador], enemigos.list, 0, 10)
         ui.score += 10 * ColicionEnemigoBala.B.length;
-        
         if (ColicionEnemigoJugador.A.length > 0) {
             game.stop();
             ui.setGameOver();
         }
+
+        const ColicionPowerupJugador = hitBoxing([jugador], powerUps.list, 0, 0)
+        powerUps.removePower(ColicionPowerupJugador.B)
+        // if (ColicionPowerupJugador.B > 0) {
+            
+        // }
     })
 
     game.render((ctx, canvas, gameProperties) => {
@@ -84,6 +99,7 @@ async function main() {
         enemigos.render(ctx)
         jugador.render(ctx);
         disparo.render(ctx);
+        powerUps.render(ctx);
         ui.render(ctx);
     });
 
@@ -93,7 +109,6 @@ async function main() {
         enemigos.reset();
         disparo.reset();
         game.start();
-
         loadAudio.play();
     });
 
