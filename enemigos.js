@@ -9,9 +9,9 @@ export default class Enemigos {
     height = null;
     x = 0;
     y = 0;
-    lives = 2;
+    lives = 3;
 
-    speedWith = 3;
+    speedWith = 2;
     speedHeight = 20;
 
     preRenderPlano = null;
@@ -23,6 +23,14 @@ export default class Enemigos {
 
     canvasMain = null;
     _cacheTemplate = []
+    _counterDisparo = 0
+
+
+    
+    _eventshoot = ()=>{}
+    onshot(callback){
+        this._eventshoot = callback
+    }
 
     constructor({
             imagePlayer, 
@@ -162,6 +170,7 @@ export default class Enemigos {
             this._reverseMode = false
             if (this.y < this.canvasMain.height) this.y += this.speedHeight;
         };
+        
         if (this.x == 0) {
             this._reverseMode = true
             if (this.y < this.canvasMain.height) this.y += this.speedHeight;
@@ -174,6 +183,14 @@ export default class Enemigos {
             enemigo.y = enemigo_tm.y + this.y
         }
 
+        
+        if (this._counterDisparo > 20) {
+            this._counterDisparo = 0;
+            let numeroAleatorio = getRandomInt(0, this.list.length -1)
+            this._eventshoot(this.list[numeroAleatorio])
+        }
+        this._counterDisparo++
+
         ctx.drawImage(
             this.preRenderPlano,
             this.x,
@@ -182,4 +199,11 @@ export default class Enemigos {
 
     }
 
+
+
+}
+
+
+function getRandomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }

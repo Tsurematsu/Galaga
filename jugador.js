@@ -38,12 +38,21 @@ export default class Jugador{
     }
 
     _asossiationKeys = {
-        "KeyA": (status)=>{this._leftKey = status},
-        "KeyD": (status)=>this._rightKey = status,
-        "KeyW": (status)=>this._upKey = status,
-        "KeyS": (status)=>this._downKey = status,
-        "ArrowUp": (status)=>this._spaceKey = status
+        "ArrowLeft": (status)=>{this._leftKey = status},
+        "ArrowRight": (status)=>this._rightKey = status,
+        "ArrowUp": (status)=>this._upKey = status,
+        "ArrowDown": (status)=>this._downKey = status,
+        "Space": (status)=>this._spaceKey = status
     }
+
+    
+    // _asossiationKeys = {
+    //     "KeyA": (status)=>{this._leftKey = status},
+    //     "KeyD": (status)=>this._rightKey = status,
+    //     "KeyW": (status)=>this._upKey = status,
+    //     "KeyS": (status)=>this._downKey = status,
+    //     "ArrowUp": (status)=>this._spaceKey = status
+    // }
 
     _CapturaTeclado() {
         document.addEventListener("keydown", (event) => {

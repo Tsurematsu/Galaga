@@ -16,6 +16,7 @@ async function main() {
     
     /** @type {HTMLCanvasElement} */
     const canvas = document.querySelector('canvas#planoDibujo');
+    const video = document.getElementById('videoApp')
     const context = canvas.getContext('2d');
 
     // Estalbecer el tamaño del canvas
@@ -72,14 +73,36 @@ async function main() {
         canvasMain: canvas
     })
 
+    enemigos.onshot((pos) => {
+        disparo.nuevaBala(pos.x + jugador.width / 2, pos.y, 1, "B", "black");
+    })
+
     jugador.onShoot((pos) => {
-        disparo.nuevaBala(pos.x + jugador.width / 2, pos.y);
+        disparo.nuevaBala(pos.x + jugador.width / 2, pos.y, -1, "A");
     })
 
     game.loop(() => {
-        const ColicionEnemigoBala = hitBoxing(disparo.list, enemigos.list, 0, 0)
+
+        if (enemigos.list.length == 0) {
+            game.stop()
+            ui.setWin() 
+            video.src = "./videos/These_characters_should_congratulate_the_player_sa_3ae5632124.mp4"
+            canvas.style = "backdrop-filter: blur(0px);"
+            video.muted = false
+        }
+
+        const ColicionEnemigoBala = hitBoxing(disparo.list.filter(e=>e.tag === "A"), enemigos.list, 0, 0)
         disparo.removeBala(ColicionEnemigoBala.A);
         enemigos.removeEnemigo(ColicionEnemigoBala.B);
+
+        const ColicionPlayerBala = hitBoxing(disparo.list.filter(e=>e.tag === "B"), [jugador], 0, 0)
+        disparo.removeBala(ColicionPlayerBala.A);
+        if(ColicionPlayerBala.A.length > 0){
+            game.stop();
+            ui.setGameOver();
+        }
+        
+
         const ColicionEnemigoJugador = hitBoxing([jugador], enemigos.list, 0, 10)
         ui.score += 10 * ColicionEnemigoBala.B.length;
         if (ColicionEnemigoJugador.A.length > 0) {
@@ -104,6 +127,10 @@ async function main() {
     });
 
     ui.onPlay(() => {
+        video.src = "./videos/DAN DA DAN - Opening _ Otonoke de Creepy Nuts.mp4"
+        canvas.style = "backdrop-filter: blur(30px);"
+        video.muted = true
+
         jugador.x = canvas.width / 2 - jugador.width / 2
         jugador.y = canvas.height - jugador.height - 70
         enemigos.reset();
